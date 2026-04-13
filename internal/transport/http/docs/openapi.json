@@ -1,0 +1,357 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Subscription Management API",
+    "version": "1.0.0",
+    "description": "CRUD API for subscription management. Implemented as a test task for Effective Mobile"
+  },
+  "servers": [
+    { "url": "http://localhost:8080" }
+  ],
+  "tags": [
+    {
+      "name": "Subscriptions",
+      "description": "Operations with subscriptions"
+    }
+  ],
+  "paths": {
+    "/api/v1/subscriptions": {
+      "get": {
+        "tags": [ "Subscriptions" ],
+        "summary": "List all subscriptions",
+        "responses": {
+          "200": {
+            "description": "Subscription list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Subscription" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [ "Subscriptions" ],
+        "summary": "Create new subscription",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateSubscriptionRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Newly created subscription",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Subscription" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" }
+        }
+      }
+    },
+    "/api/v1/subscriptions/{id}": {
+      "get": {
+        "tags": [ "Subscriptions" ],
+        "summary": "Retrieve subscription by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Subscription",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Subscription" }
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      },
+      "put": {
+        "tags": [ "Subscriptions" ],
+        "summary": "Update subscription",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 1
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateSubscriptionRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated subscription",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Subscription" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      },
+      "delete": {
+        "tags": [ "Subscriptions" ],
+        "summary": "Delete subscription by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "204": { "description": "Deleted" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
+    "/api/v1/subscriptions/total_price": {
+      "post": {
+        "tags": [ "Subscriptions" ],
+        "summary": "Get total subscription price for a given user or a given service",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/TotalPriceRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Total price for given range of dates",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TotalPrice"}
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    }
+  },
+  "components": {
+    "responses": {
+      "BadRequest": {
+        "description": "Bad request",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/Error" }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Resource not found",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/Error" }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "CreateSubscriptionRequest": {
+        "type": "object",
+        "required": [
+          "user_id",
+          "service",
+          "price",
+          "subscribed_on",
+          "unsubscribed_on"
+        ],
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "f0687bfe-005c-42fb-853c-fb351b8c1dcd"
+          },
+          "service": {
+            "type": "string",
+            "example": "AMS Journal"
+          },
+          "price": {
+            "type": "integer",
+            "minimum": 0,
+            "example": 2
+          },
+          "subscribed_on": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-03"
+          },
+          "unsubscribed_on": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date",
+                "example": "2026-03"
+              },
+              { "type": "null" }
+            ]
+          }
+        }
+      },
+      "UpdateSubscriptionRequest": {
+        "type": "object",
+        "required": [
+          "user_id",
+          "service",
+          "price",
+          "subscribed_on",
+          "unsubscribed_on"
+        ],
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "f0687bfe-005c-42fb-853c-fb351b8c1dcd"
+          },
+          "service": {
+            "type": "string",
+            "example": "AMS Journal"
+          },
+          "price": {
+            "type": "integer",
+            "minimum": 0,
+            "example": 2
+          },
+          "subscribed_on": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-03"
+          },
+          "unsubscribed_on": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date",
+                "example": "2026-03"
+              },
+              { "type": "null" }
+            ]
+          }
+        }
+      },
+      "TotalPriceRequest": {
+        "type": "object",
+        "required": ["start_date", "end_date"],
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "f0687bfe-005c-42fb-853c-fb351b8c1dcd"
+          },
+          "service": {
+            "type": "string",
+            "example": "AMS Journal"
+          },
+          "start_date": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-03"
+          },
+          "end_date": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-03"
+          }
+        }
+      },
+      "Subscription": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "example": 1
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "f0687bfe-005c-42fb-853c-fb351b8c1dcd"
+          },
+          "service": {
+            "type": "string",
+            "example": "AMS Journal"
+          },
+          "price": {
+            "type": "integer",
+            "minimum": 0,
+            "example": 2
+          },
+          "subscribed_on": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-03"
+          },
+          "unsubscribed_on": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date",
+                "example": "2026-03"
+              },
+              { "type": "null" }
+            ]
+          }
+        }
+      },
+      "TotalPrice": {
+        "type": "object",
+        "properties": {
+          "price": {
+            "type": "integer",
+            "example": 10000
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "subscription(s) not found"
+          }
+        }
+      }
+    }
+  }
+}

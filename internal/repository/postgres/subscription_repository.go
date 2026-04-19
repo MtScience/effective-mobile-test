@@ -91,7 +91,7 @@ func (r *Repository) Update(ctx context.Context, sub *domain.Subscription) (*dom
 			subscribed_on = $4
 			unsubscribed_on = $5
 		WHERE id = $6
-		RETURNING id, user_id, name, price, subscribed_on, unsubscribed_on
+		RETURNING id, user_id, service, price, subscribed_on, unsubscribed_on
 	`
 
 	row := r.pool.QueryRow(

@@ -8,3 +8,4 @@ CREATE TABLE IF NOT EXISTS subscriptions (
 );
 
 CREATE INDEX IF NOT EXISTS idx_subscription_user_ids ON subscriptions (user_id);
+CREATE INDEX IF NOT EXISTS idx_subscription_srevices ON subscriptions (service);
